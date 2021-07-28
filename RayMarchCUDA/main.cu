@@ -66,13 +66,20 @@ float3 CameraVector = make_float3(1.0f, .0f, .0f);
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
-const char* heightfieldfile = "BricksH.ppm";//"imtest.ppm";// "height.ppm"; //"flower.ppm";
-const char* colorfile = "BricksCol.ppm"; // "imtest.ppm";
+//const char* heightfieldfile = "BricksH.ppm";//"imtest.ppm";// "height.ppm"; //"flower.ppm";
+//const char* colorfile = "BricksCol.ppm"; // "imtest.ppm";
 
 // constants
-unsigned int window_width = 1000;
-unsigned int window_height = 1000;
+unsigned int window_width = 1024;
+unsigned int window_height = 1024;
+int intensitySetting = 0;
+int mode = 1;
+int sceneNumber = 0;
 dim3 block(16, 16, 1);
+//dim3 block(32, 32, 1);
+//unsigned int window_width = 100;
+//unsigned int window_height = 100;
+//dim3 block(1, 1, 1);
 dim3 grid(iDivUp(window_width, block.x), iDivUp(window_height, block.y), 1);
 
 GLuint pbo = 0;     // OpenGL pixel buffer object
@@ -82,11 +89,11 @@ struct cudaGraphicsResource* cuda_pbo_resource; // CUDA Graphics Resource (to tr
 // mouse controls
 int mouse_old_x, mouse_old_y;
 int mouse_buttons = 0;
-float rotate_x = 0.0, rotate_y = 0.0;
-float translate_z = 3.0;
+//float rotate_x = 0.0, rotate_y = 0.0;
+//float translate_z = 3.0;
 
 float3 viewRotation;
-float3 viewTranslation = make_float3(0.0, 0.0, -4.0f);
+float3 viewTranslation = make_float3(0.0f, -2.0f, -8.0f);
 
 StopWatchInterface* timer = NULL;
 
@@ -103,10 +110,11 @@ CustomTimer timerC = CustomTimer();
 
 ////////////////////////////////////////////////////////////////////////////////
 // declaration, forward
-bool runTest(int argc, char** argv, char* ref_file);
+bool runProgram(int argc, char** argv, int scene, int mode);
 void cleanup();
 void initPixelBuffer();
 void loadImageData();
+void loadImageDataCube(int scene);
 void idle();
 
 // GL functionality
@@ -149,6 +157,7 @@ bool checkHW(char* name, const char* gpuType, int dev)
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv)
 {
+    /*
     char* ref_file = NULL;
 
     pArgc = &argc;
@@ -170,8 +179,19 @@ int main(int argc, char** argv)
     }
 
     printf("\n");
-
-    runTest(argc, argv, ref_file);
+*/
+    std::cout << "command line arguments: x y \nwhere x = {1,2} - scene number,\n y = {1,2,3} - mode: "<<
+        "\n1 - visual ray marching, \n2 - \'sound\' raymarching, \n3 - \'sound\' cube raymarching\n";
+    
+    int sceneNumber = 1;
+    //int mode = 1;
+    if (argc > 1)
+        sceneNumber = std::stoi(argv[1]);
+    if (argc > 2)
+        mode = std::stoi(argv[2]);
+    sceneNumber = ((sceneNumber - 1) % 2) + 1;
+    mode = ((mode - 1) % 3) + 1;
+    runProgram(argc, argv, sceneNumber, mode);
 
 }
 
@@ -278,11 +298,7 @@ void initPixelBuffer()
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-//! Run a simple test for CUDA
-////////////////////////////////////////////////////////////////////////////////
-bool runTest(int argc, char** argv, char* ref_file)
+bool runProgram(int argc, char** argv, int scene, int mode)
 {
     // Create the CUTIL timer
     sdkCreateTimer(&timer);
@@ -301,7 +317,8 @@ bool runTest(int argc, char** argv, char* ref_file)
     // run the cuda part
     //runCuda(&cuda_vbo_resource);
 
-    loadImageData();
+    //loadImageData();
+    loadImageDataCube(scene);
 
     // start rendering mainloop
     glutMainLoop();
@@ -309,37 +326,26 @@ bool runTest(int argc, char** argv, char* ref_file)
     return true;
 }
 
-//#pragma pack(push,4)
-//struct Image
-//{
-//    void* h_data;
-//    cudaExtent              size;
-//    cudaResourceType        type;
-//    cudaArray_t             dataArray;
-//    cudaMipmappedArray_t    mipmapArray;
-//    cudaTextureObject_t     textureObject;
-//
-//    Image()
-//    {
-//        memset(this, 0, sizeof(Image));
-//    }
-//};
-//#pragma pack(pop)
 
 template <class T>
 bool LoadPPM4(const char* file, const char* filedepth, T** data, unsigned int* w, unsigned int* h);
 
+#include "EXRLoader.h"
+
+/*
 void loadImageData()
 {
-    //std::vector<Image> images;
-
-    unsigned int imgWidth = 0;
-    unsigned int imgHeight = 0;
-    uchar* imgData = NULL;
-    const char* imgFilename = colorfile;
+    int imgWidth = 0;
+    int imgHeight = 0;
+    //uchar* imgData = NULL;
+    float* imgData = NULL;
+    const char* imgFilename = "images/0001.exr";// colorfile;
     const char* DepthFilename = heightfieldfile;
 
-    LoadPPM4(imgFilename, DepthFilename, (unsigned char**)&imgData, &imgWidth, &imgHeight);
+    //LoadPPM4(imgFilename, DepthFilename, (unsigned char**)&imgData, &imgWidth, &imgHeight);
+
+    //readRgba(imgFilename, imgWidth, imgHeight, imgData);
+    readGZ(imgFilename, imgWidth, imgHeight, imgData);
 
     if (!imgData)
     {
@@ -354,12 +360,49 @@ void loadImageData()
     img.h_data = imgData;
    // images.push_back(img);
 
-    initCuda(img);
+    //initCuda(img);
+}
+*/
+void loadImageDataCube(int scene)
+{
+    int imgWidth = 0;
+    int imgHeight = 0;
+    //uchar* imgData = NULL;
+    //float* imgData[6];// = NULL;
+    char* imgFilenames1[] = { "images/C0001.exr", "images/C0002.exr","images/C0003.exr","images/C0004.exr","images/C0005.exr","images/C0006.exr",
+    "images/N0001.exr", "images/N0002.exr","images/N0003.exr","images/N0004.exr","images/N0005.exr","images/N0006.exr"};
+    char* imgFilenames2[] = { "images2/C0001.exr", "images2/C0002.exr","images2/C0003.exr","images2/C0004.exr","images2/C0005.exr","images2/C0006.exr",
+    "images2/N0001.exr", "images2/N0002.exr","images2/N0003.exr","images2/N0004.exr","images2/N0005.exr","images2/N0006.exr" };
+    //ImageCube imgcube;
+    std::vector<Image> images;
+
+    char** filenames;
+    if (scene == 1) filenames = imgFilenames1;
+    if (scene == 2) filenames = imgFilenames2;
+
+    for (int i=0;i<12;++i){
+        int imgWidth = 0;
+        int imgHeight = 0;
+        float* imgData=nullptr;
+        readGZ(filenames[i], imgWidth, imgHeight, imgData, (i>=6));
+
+        if (!imgData)
+        {
+            printf("Error opening file '%s'\n", filenames[i]);
+            exit(EXIT_FAILURE);
+        }
+
+        printf("Loaded '%s', %d x %d pixels\n", filenames[i], imgWidth, imgHeight);
+
+        Image img;
+        img.size = make_cudaExtent(imgWidth, imgHeight, 0);
+        img.h_data = imgData;
+        images.push_back(img);
+    }
+    //initCuda(img);
+    initCuda(images);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//! Run the Cuda part of the computation
-////////////////////////////////////////////////////////////////////////////////
 void runCuda()
 {
     // map PBO to get CUDA device pointer
@@ -386,7 +429,8 @@ void runCuda()
     copyInvViewMatrix((float*)glm::value_ptr(inv_matrix), 12*sizeof(float));
 //    copyInvViewMatrix(inverseviewtmp, 3 * sizeof(float4));
     //raymarchkernel << < grid, block >> > (d_output, window_width, window_height);
-    raymarchkernelStart(d_output, window_width, window_height,grid, block);
+    raymarchkernelStart(d_output, window_width, window_height,grid, block, nullptr, intensitySetting, mode);
+    cudaDeviceSynchronize();
 
     // unmap buffer object
     checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_pbo_resource, 0));
@@ -425,9 +469,10 @@ void display()
     //glRotatef(rotate_x, 1.0, 0.0, 0.0);
     //glRotatef(rotate_y, 0.0, 1.0, 0.0);
     //glTranslatef(0.0, 0.0, translate_z);
-    glRotatef(-viewRotation.x, 1.0, 0.0, 0.0);
-    glRotatef(-viewRotation.y, 0.0, 1.0, 0.0);
+    glRotatef(-viewRotation.x, 0.0, 1.0, 0.0);
+    glRotatef(-viewRotation.y, 1.0, 0.0, 0.0);
     glTranslatef(-viewTranslation.x, -viewTranslation.y, -viewTranslation.z);
+    //glTranslatef(0, 0, -1);
     //glMatrixMode(GL_PROJECTION);
     //glLoadIdentity();
 
@@ -490,6 +535,7 @@ void cleanup()
 {
     sdkDeleteTimer(&timer);
 
+    //freeCudaBuffers();
     freeCudaBuffers();
 
     if (pbo)
@@ -519,6 +565,23 @@ void keyboard(unsigned char key, int /*x*/, int /*y*/)
         glutDestroyWindow(glutGetWindow());
         return;
 #endif
+        break;
+    case '=':
+    case '+':
+        ++intensitySetting;
+        break;
+    case '-':
+        --intensitySetting;
+        break;
+    case '1':
+        mode = 1;
+        break;
+    case '2':
+        mode = 2;
+        break;
+    case '3':
+        mode = 4;
+        break;
     }
 }
 
@@ -564,8 +627,8 @@ void motion(int x, int y)
     else if (buttonState == 1)
     {
         // left = rotate
-        viewRotation.x += dy / 5.0f;
-        viewRotation.y += dx / 5.0f;
+        viewRotation.x += dx / 5.0f;
+        viewRotation.y += dy / 5.0f;
     }
 
     ox = x;

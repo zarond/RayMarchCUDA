@@ -41,23 +41,24 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);../common/inc;glm</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../common/lib/$(PlatformName)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);../common/inc;glm;openexr\src\lib;openexr\src\lib\Iex;openexr\lib\IlmThread;openexr\src\lib\OpenEXRUtil;openexr\src\lib\OpenEXR;openexr\build\cmake;openexr\build\_deps\imath-src\src\Imath;openexr\build\_deps\imath-build\config</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../common/lib/$(PlatformName);openexr\build\cmake;openexr\build\src\lib;openexr\build\src\lib\IlmThread\Release;openexr\build\src\lib\OpenEXR\Release;openexr\build\src\lib\Iex\Release;openexr\build\src\lib\OpenEXRUtil\Release;openexr\build\_deps\imath-build\src\Imath\Release;openexr\build\zlib-build\Release</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);../common/inc;glm</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../common/lib/$(PlatformName)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);../common/inc;glm;openexr\src\lib;openexr\src\lib\Iex;openexr\lib\IlmThread;openexr\src\lib\OpenEXRUtil;openexr\src\lib\OpenEXR;openexr\build\cmake;openexr\build\_deps\imath-src\src\Imath;openexr\build\_deps\imath-build\config</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../common/lib/$(PlatformName);openexr\build\cmake;openexr\build\src\lib;openexr\build\src\lib\IlmThread\Release;openexr\build\src\lib\OpenEXR\Release;openexr\build\src\lib\Iex\Release;openexr\build\src\lib\OpenEXRUtil\Release;openexr\build\_deps\imath-build\src\Imath\Release;openexr\build\zlib-build\Release</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew64.lib;OpenEXR-3_0.lib;OpenEXRUtil-3_0.lib;Imath-3_0.lib;Iex-3_0.lib;IlmThread-3_0.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../common/lib/$(PlatformName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
@@ -82,7 +83,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew64.lib;OpenEXR-3_0.lib;OpenEXRUtil-3_0.lib;Imath-3_0.lib;Iex-3_0.lib;IlmThread-3_0.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../common/lib/$(PlatformName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
@@ -90,6 +91,13 @@
       <Include>./;../common/inc</Include>
       <CodeGeneration>compute_52,sm_52;compute_52,sm_52;compute_60,sm_60;compute_61,sm_61;compute_70,sm_70;compute_75,sm_75;compute_80,sm_80;compute_86,sm_86;</CodeGeneration>
       <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+      <GPUDebugInfo>false</GPUDebugInfo>
+      <HostDebugInfo>false</HostDebugInfo>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <FastMath>true</FastMath>
+      <InterleaveSourceInPTX>false</InterleaveSourceInPTX>
+      <GenerateLineInfo>false</GenerateLineInfo>
+      <PtxAsOptionV>false</PtxAsOptionV>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -98,7 +106,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomTimer.hpp" />
+    <ClInclude Include="EXRLoader.h" />
     <ClInclude Include="kernels.cuh" />
+    <ClInclude Include="raysgather.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EXRLoader.cpp" />
+    <ClCompile Include="raysgather.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
