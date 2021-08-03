@@ -736,7 +736,8 @@ __global__ void raymarchkernelSound(uchar4* d_output, unsigned int imageW, unsig
     sum = rayinfo; 
     if (distance <= 0.0f) { sum = make_float4(0.0f);}
     float4 res = sum;
-    float4 res1 = make_float4(0.0f, u, v, distance);
+    //float4 res1 = make_float4(0.0f, u, v, distance);
+    float4 res1 = make_float4(eyeRay.d.x, eyeRay.d.y, eyeRay.d.z, distance);
     IR[(y * imageW + x)*2] = res;
     IR[(y * imageW + x) * 2 + 1] = res1;
 
@@ -784,7 +785,8 @@ __global__ void raymarchkernelSoundCube(uchar4* d_output, unsigned int side_N, u
     sum = rayinfo;
     if (distance <= 0.0f) { sum = make_float4(0.0f); }
     float4 res = sum;
-    float4 res1 = make_float4(0.0f, u, v, distance);
+    //float4 res1 = make_float4(0.0f, u, v, distance);
+    float4 res1 = make_float4(eyeRay.d.x, eyeRay.d.y, eyeRay.d.z, distance);
     IR[(face * side_N * side_N + y * side_N + x) * 2] = res;
     IR[(face * side_N * side_N + y * side_N + x) * 2 + 1] = res1;
 
