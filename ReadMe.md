@@ -12,23 +12,23 @@
 
 На Рис. 1 - 5 показаны примеры работы программы.
 
-[](https://github.com/zarond/RayMarchCUDA/tree/master/pictures/fig1.png)
+![](pictures/fig1.png)
 
 Рис. 1 Сцена №1. Видны недостатки алгоритма описания сцены с помощью карт высот
 
-[](https://github.com/zarond/RayMarchCUDA/tree/master/pictures/fig2.png)
+![](pictures/fig2.png)
 
 Рис. 2 Сцена №1. Видны отражения луча от поверхностей
 
-[](https://github.com/zarond/RayMarchCUDA/tree/master/pictures/fig3.png)
+![](pictures/fig3.png)
 
 Рис. 3 Сцена №2 с зеркальными стенами. Видны множественные отражения
 
-[](https://github.com/zarond/RayMarchCUDA/tree/master/pictures/fig4.png)
+![](pictures/fig4.png)
 
 Рис. 4 Визуализация режима работы №2. Белые точки - лучи, пересекающиеся с источником. В центре видны отражения от объекта-сферы в сцене.
 
-[](https://github.com/zarond/RayMarchCUDA/tree/master/pictures/fig5.png)
+![](pictures/fig5.png)
 
 Рис. 5 Панорамная визуализация режима работы №3
 
